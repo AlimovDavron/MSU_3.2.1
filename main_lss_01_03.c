@@ -31,7 +31,7 @@ int validateParameters(int argc, char **argv){
         return 1;
 
     for(i = 3; i < argc; i++)
-        if(argv[i][0] != '-' || strlen(argv[i]) > 2)
+        if(argv[i][0] != '-' || strlen(argv[i]) != 2)
             return 2;
 
     return 0;
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
     int i = 0, n;
     double *A, *B, *X, *tmp;
     char* inputFile = "lss_01_03_in.txt";
-    char* outputFile = "lss_01_03_out";
+    char* outputFile = "lss_01_03_out.txt";
 
     switch (validateParameters(argc, argv))
     {
@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
         default: break;
     }
 //TODO: ADD TIME
-    lss_01_03(n, A, B, &X, &tmp);
+    lss_01_03(n, A, B, X, tmp);
 
     return 0;
 }
