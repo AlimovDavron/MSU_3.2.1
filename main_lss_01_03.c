@@ -9,6 +9,12 @@
  *
  */
 
+char fl_d = NULL,
+        fl_e = NULL,
+        fl_p = NULL,
+        fl_t = NULL,
+        fl_h = NULL;
+
 int strlen(char const *input){
     int length = 0;
     while(input[length]!='\0')
@@ -54,12 +60,6 @@ int readInputData(char *inputFile, double** A, double** B, double** X, int *n)
 
     return 0;
 }
-
-char fl_d = NULL,
-     fl_e = NULL,
-     fl_p = NULL,
-     fl_t = NULL,
-     fl_h = NULL;
 
 int main(int argc, char* argv[]) {
     int i = 0, n;

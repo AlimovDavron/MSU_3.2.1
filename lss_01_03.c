@@ -5,6 +5,8 @@
 
 double const EPS = 1e-6;
 
+extern char fl_d;
+
 struct pair{
     int i, j;
 };
@@ -27,7 +29,9 @@ struct pair getMax(int n, double *A, int k){
 }
 
 void setReplacement(struct pair replacement, double* pMem){
-//TODO: figure out what to do with types in different systems
+    int* ptr = (int *) pMem;
+    *ptr = replacement.i;
+    *(ptr+1) = replacement.j;
 }
 
 void replaceColumn(int n, int k, int column, double* A){
@@ -65,11 +69,26 @@ void pp(int n, double* A, double* B){
     printf("\n\n");
 }
 
+void printOrderOfReplacemets(double* tmp, int n){
+    int i = 0;
+    int *ptr = (int*)tmp;
+    for(i = 0; i < 2*n; i+=2)
+        printf("%d %d\n", *(ptr+i), *(ptr+i+1));
+}
+
+
 int lss_01_03(int n, double* A, double* B, double* X, double* tmp){
     struct pair mx; int i, k, j; double divider;
     for(k = 0; k < n; k++)
     {
+        if(fl_d)
+            pp(n, A, B);
+
         mx = getMax(n, A, k);
+
+        if(fl_d)
+            printf("The Biggest coefficient is at (r:%d c:%d)\n\n", mx.i, mx.j);
+
         setReplacement(mx, tmp+k);
         replaceColumn(n, k, mx.j, A);
         replaceRow(n, k, mx.i, A, B);
@@ -86,4 +105,6 @@ int lss_01_03(int n, double* A, double* B, double* X, double* tmp){
             *(B+i) = *(B+i) - *(B+k) * multiplier;
         }
     }
+    if(fl_d)
+        printOrderOfReplacemets(tmp, n);
 }
