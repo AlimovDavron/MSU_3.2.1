@@ -4,14 +4,13 @@
 #define GET(A, x, y, n) (A+x*n+y)
 
 double const EPS = 1e-6;
-
 extern char fl_d;
 
 struct pair{
     int i, j;
 };
 
-struct pair getMax(int n, double *A, int k){
+struct pair getMax(int n, const double *A, int k){
     struct pair result = {-1, -1};
     double maximumValue = 0.;
     for(int i = k; i < n; i++)
@@ -56,7 +55,7 @@ void replaceRow(int n, int k, int row, double *A, double *B){
     *(B+row) = tmp;
 }
 
-void pp(int n, double* A, double* B){
+void prettyPrint(int n, const double* A){
     for(int i = 0; i < n; i++)
     {
         for(int j = 0; j < n; j++)
@@ -64,12 +63,18 @@ void pp(int n, double* A, double* B){
             printf("%lf ", *GET(A, i, j, n));
         } printf("\n");
     }
+}
+
+void pp(int n, const double* A, const double* B){
+    printf("A:\n");
+    prettyPrint(n, A);
+    printf("B:\n");
     for(int i = 0; i < n; i++)
         printf("%lf ", *(B+i));
     printf("\n\n");
 }
 
-void printOrderOfReplacemets(double* tmp, int n){
+void printOrderOfReplacements(double *tmp, int n){
     int i = 0;
     int *ptr = (int*)tmp;
     for(i = 0; i < 2*n; i+=2)
@@ -87,14 +92,14 @@ int lss_01_03(int n, double* A, double* B, double* X, double* tmp){
         mx = getMax(n, A, k);
 
         if(fl_d)
-            printf("The Biggest coefficient is at (r:%d c:%d)\n\n", mx.i, mx.j);
+            printf("The biggest coefficient is at (r:%d c:%d)\n\n", mx.i, mx.j);
 
         setReplacement(mx, tmp+k);
         replaceColumn(n, k, mx.j, A);
         replaceRow(n, k, mx.i, A, B);
 
         divider = *GET(A, k, k, n);
-        for(int j = k; j < n; j++)
+        for(j = k; j < n; j++)
             *GET(A, k, j, n) /= divider;
         *(B+k) /= divider;
         for(i = k+1; i < n; i++)
@@ -105,6 +110,33 @@ int lss_01_03(int n, double* A, double* B, double* X, double* tmp){
             *(B+i) = *(B+i) - *(B+k) * multiplier;
         }
     }
+
     if(fl_d)
-        printOrderOfReplacemets(tmp, n);
+        pp(n, A, B);
+
+    for(i = n-1; i >= 0; i--){
+        double sum = *(B+i);
+        for(j = i+1; j <= n-1; j++)
+            sum -= *(X + j) * *GET(A, i, j, n);
+        *(X+i) = sum;
+    }
+
+
+    if(fl_d)
+        printOrderOfReplacements(tmp, n);
+
+    int* iPtr = (int*)tmp;
+    for(i = 2*n - 2, k = n-1; i >= 0, k >= 0; i-=2, k--){
+        //int row = *(iPtr+i);
+        int column = *(iPtr+i+1);
+        //replaceRow(n, k, row, A, B);
+        replaceColumn(1, k, column, X);
+    }
+
+    printf("ANS: \n");
+    for(i = 0; i < n; i++){
+        printf("%lf ", *(X+i));
+    }    printf("\n");
+
+
 }
