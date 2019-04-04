@@ -61,6 +61,14 @@ int readInputData(char *inputFile, double** A, double** B, double** X, int *n)
     return 0;
 }
 
+void writeAnswer(char *outputFile, int n, double* X){
+    int i;
+    FILE *out = fopen(outputFile, "w");
+    fprintf(out, "%d\n", n);
+    for(i = 0; i < n; i++)
+        fprintf(out, "%1.9lf\n", *(X+i));
+}
+
 int main(int argc, char* argv[]) {
     int i = 0, n;
     double *A, *B, *X, *tmp;
@@ -119,8 +127,17 @@ int main(int argc, char* argv[]) {
 
         default: break;
     }
-//TODO: ADD TIME
+
+    tmp = malloc(n * sizeof(double));
+
+    clock_t begin = clock();
     lss_01_03(n, A, B, X, tmp);
+    clock_t end = clock();
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+
+    if(fl_t) printf("Execution time: %1.9lf\n", time_spent);
+
+    writeAnswer(outputFile, n, X);
 
     return 0;
 }

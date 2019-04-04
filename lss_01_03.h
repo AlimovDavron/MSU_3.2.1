@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 int lss_01_03(int n, double* A, double* B, double* X, double* tmp);
 
