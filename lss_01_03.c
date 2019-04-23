@@ -3,12 +3,16 @@
 
 #define GET(A, x, y, n) (A+(x)*(n)+(y))
 
-double const EPS = 1e-6;
-extern char fl_d;
+double const EPS = 1e-25;
+extern int fl_d;
 
 struct pair{
     int i, j;
 };
+
+size_t lss_memsize_SS_NN(int n){
+    return n*sizeof(double);
+}
 
 struct pair getMax(int n, const double *A, int k){
     struct pair result = {-1, -1};
@@ -17,7 +21,7 @@ struct pair getMax(int n, const double *A, int k){
     {
         for(int j = k; j < n; j++)
         {
-            if(fabs(maximumValue) < fabs(*GET(A, i, j, n)))
+            if(fabs(*GET(A, i, j, n)) - fabs(maximumValue) > EPS)
             {
                 maximumValue = fabs(*GET(A, i, j, n));
                 result.i = i; result.j = j;
@@ -96,7 +100,7 @@ int lss_01_03(int n, double* A, double* B, double* X, double* tmp){
         if(mx.i == -1) {
             for(i = k; i < n; i++)
                 if (fabs(*(B + i)) > EPS) {
-                    printf("No solution exists.");
+                    if(fl_d) printf("No answer exists.\n");
                     return 1;
                 }
             infinity = k;
@@ -151,10 +155,7 @@ int lss_01_03(int n, double* A, double* B, double* X, double* tmp){
     int* iPtr = (int*)tmp;
     if(infinity == -1)
         for(i = 2*n - 2, k = n-1; k >= 0; i-=2, k--){
-            //int row = *(iPtr+i);
             int column = *(iPtr+i+1);
-
-            //replaceRow(n, k, row, A, B);
             replaceColumn(1, k, column, X);
         }
     else{

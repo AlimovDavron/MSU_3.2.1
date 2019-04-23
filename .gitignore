@@ -2,3 +2,4 @@
 *.in
 lss
 .idea
+*.o
