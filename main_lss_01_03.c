@@ -19,16 +19,15 @@ int _strlen(char const *input){
 int validateFile(char* filename)
 {
     FILE *f = fopen(filename, "rb");
-    return f == NULL;
+    return f != NULL;
 }
 
 int validateParameters(int argc, char **argv){
-    int i = 0;
+    int i, cnt = 0;
     if(argc == 1)
         return 0;
 
-    int validationError = 0;
-    for(i = 3; i < argc; i++)
+    for(i = 1; i < argc; i++){
         if(argv[i][0] == '-' && _strlen(argv[i]) == 2)
             switch (argv[i][1])
             {
@@ -50,19 +49,17 @@ int validateParameters(int argc, char **argv){
                     fl_t = 1;
                     break;
                 default:
-                    validationError = 1;
-                    break;
+                    return 3;
             }
-
-    if(validationError)
-        return 3;
-
-    if(validateFile(argv[1]) || validateFile(argv[2]))
-        return 1;
-
-    for(i = 3; i < argc; i++)
-        if(argv[i][0] != '-' || _strlen(argv[i]) != 2)
+        else if(argv[i][0] == '-')
             return 2;
+        else{
+            cnt++;
+        }
+    }
+
+    if(cnt > 2)
+        return 1;
 
     return 0;
 }
@@ -74,8 +71,10 @@ int readInputData(char *inputFile, double** A, double** B, double** X, int *n)
 
 
     checkInput = fscanf(in, "%d", n);
-    if (checkInput == EOF)
-        return 2;
+    if(checkInput == EOF)
+        return 4;
+    if(checkInput == 0)
+        return 3;
 
     if(*n <= 0)
         return 1;
@@ -95,7 +94,7 @@ int readInputData(char *inputFile, double** A, double** B, double** X, int *n)
     for(i = 0; i < (*n); i++){
         checkInput = fscanf(in, "%lf", (*B+i));
         if (checkInput == EOF)
-            return 2;
+            return 5;
         if(checkInput == 0)
             return 3;
     }
@@ -141,21 +140,16 @@ void printMatrix(int n, int m, const double* A){
 }
 
 int main(int argc, char* argv[]) {
-    int n;
+    int n, setInput = 0;
     double *A, *B, *X, *tmp;
     char* inputFile = "lss_01_03_in.txt";
     char* outputFile = "lss_01_03_out.txt";
 
-    if(argc > 1){
-        inputFile = argv[1];
-        outputFile = argv[2];
-    }
-
     switch (validateParameters(argc, argv))
     {
         case 1:
-            if(fl_e) printf("ValidationError: No such file or directory.\n");
-            return 2;
+            if(fl_e) printf("ValidationError: Wrong syntax of parameters.\n");
+            return 8;
         case 2:
             if(fl_e) printf("ValidationError. Wrong syntax of parameters.\n");
             return 3;
@@ -172,6 +166,23 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
+    for(int i = 1; i < argc; i++){
+        if(argv[i][0] != '-'){
+            if(!setInput){
+                inputFile = argv[i];
+                if(!validateFile(inputFile))
+                {
+                    if(fl_e) printf("ValidationError: Wrong syntax of parameters.\n");
+                    return 2;
+                }
+                setInput = 1;
+            }
+            else {
+                outputFile = argv[i];
+            }
+        }
+    }
+
     switch (readInputData(inputFile, &A, &B, &X, &n))
     {
         case 1:
@@ -181,7 +192,7 @@ int main(int argc, char* argv[]) {
             if(fl_e) printf("ValidationError. Incorrect number of coefficients. (Not enough) \n");
             return 6;
         case 3:
-            if(fl_e) printf("ValidationError. One of the coefficients not a number \n");
+            if(fl_e) printf("ValidationError. One of the coefficients is not a number \n");
             return 7;
         default: break;
     }
